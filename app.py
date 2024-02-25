@@ -3,7 +3,6 @@ from models import db, Users
 from flask_marshmallow import Marshmallow
 from flask_cors import CORS
 
-
 app = Flask(__name__)
 CORS(app,supports_credentials=True)
 
@@ -67,21 +66,34 @@ def userDelete(id):
         return jsonify({"message": "User not found"}), 404
 
 
-@app.route('/newuser',methods=['POST'])
+@app.route('/newuser', methods=['POST'])
 def newuser():
-    name=request.json['name']
-    email=request.json['email']
-    password=request.json['password']
+    try:
+        # Extract user data from the request JSON
+        name = request.json.get('name')
+        email = request.json.get('email')
+        password = request.json.get('password')
+        
+        # Check if all required fields are present
+        if not (name and email and password):
+            return jsonify({"message": "Missing required fields"}), 400
 
-    print(name)
-    print(email)
-    print(password)
+        # Create a new Users object and add it to the database
+        new_user = Users(name=name, email=email, password=password)
+        db.session.add(new_user)
+        db.session.commit()
+        # Return the newly created user with status code 201 (Created)
+        return user_schema.jsonify(new_user), 201
 
-    newuserupdate=Users(name=name,email=email,password=password)
+    except KeyError as e:
+        # Handle missing keys in the JSON payload
+        return jsonify({"message": f"Missing key in JSON payload: {e}"}), 400
 
-    db.session.add(newuserupdate)
-    db.session.commit()
-    return user_schema.jsonify(newuserupdate) 
+    except Exception as e:
+        # Handle other exceptions
+        app.logger.error(f"Error creating new user: {e}")
+        return jsonify({"message": "Internal Server Error"}), 500
+
 
 if __name__ == "__main__":
     app.run(debug=True)

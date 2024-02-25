@@ -15,19 +15,19 @@ const Edit = () => {
         password: '',
     });
 
-    // const changeUserFieldhandler = (e: ChangeEvent<HTMLInputElement>) => { 
-    //     setUserField({
-    //         ...userField,
-    //         [e.target.name]: e.target.value
-    //     });
-    // };
     const changeUserFieldhandler = (e: ChangeEvent<HTMLInputElement>) => { 
-        const { name, value } = e.target;
-        setUserField(prevState => ({
-            ...prevState,
-            [name]: name === 'password' ? value : value // Update password field separately
-        }));
+        setUserField({
+            ...userField,
+            [e.target.name]: e.target.value
+        });
     };
+    // const changeUserFieldhandler = (e: ChangeEvent<HTMLInputElement>) => { 
+    //     const { name, value } = e.target;
+    //     setUserField(prevState => ({
+    //         ...prevState,
+    //         [name]: name === 'password' ? value : value // Update password field separately
+    //     }));
+    // };
     
     const onSubmitChange= async(e: React.MouseEvent<HTMLButtonElement, MouseEvent>)=>{
         e.preventDefault();
